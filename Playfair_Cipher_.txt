@@ -1,0 +1,111 @@
+
+
+    def generate_table(key):
+        alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ'  # Huruf J digabung dengan I
+        table = ''
+        for c in key.upper() + alphabet:
+            if c not in table:
+                table += c
+        return [table[i:i+5] for i in range(0, 25, 5)]
+
+
+    def find_position(table, char):
+        for row in range(5):
+            if char in table[row]:
+                return row, table[row].index(char)
+        return None
+
+
+    def playfair_encrypt(plain, key):
+        table = generate_table(key)
+        plain = plain.upper().replace('J', 'I')
+
+        # Pisahkan menjadi pasangan huruf
+        pairs = []
+        i = 0
+        while i < len(plain):
+            a = plain[i]
+            b = ''
+            if i + 1 < len(plain):
+                b = plain[i + 1]
+            if a == b or b == '':
+                b = 'X'
+                i += 1
+            else:
+                i += 2
+            pairs.append(a + b)
+
+        # Enkripsi setiap pasangan
+        cipher = ''
+        for pair in pairs:
+            a_row, a_col = find_position(table, pair[0])
+            b_row, b_col = find_position(table, pair[1])
+
+            if a_row == b_row:
+                cipher += table[a_row][(a_col + 1) % 5]
+                cipher += table[b_row][(b_col + 1) % 5]
+            elif a_col == b_col:
+                cipher += table[(a_row + 1) % 5][a_col]
+                cipher += table[(b_row + 1) % 5][b_col]
+            else:
+                cipher += table[a_row][b_col]
+                cipher += table[b_row][a_col]
+
+        return cipher
+
+
+    def playfair_decrypt(cipher, key):
+        table = generate_table(key)
+        cipher = cipher.upper().replace('J', 'I')
+
+        # Pisahkan menjadi pasangan huruf
+        pairs = [cipher[i:i+2] for i in range(0, len(cipher), 2)]
+
+        # Dekripsi setiap pasangan
+        plain = ''
+        for pair in pairs:
+            a_row, a_col = find_position(table, pair[0])
+            b_row, b_col = find_position(table, pair[1])
+
+            if a_row == b_row:
+                plain += table[a_row][(a_col - 1) % 5]
+                plain += table[b_row][(b_col - 1) % 5]
+            elif a_col == b_col:
+                plain += table[(a_row - 1) % 5][a_col]
+                plain += table[(b_row - 1) % 5][b_col]
+            else:
+                plain += table[a_row][b_col]
+                plain += table[b_row][a_col]
+
+        return plain
+
+
+    # Contoh penggunaan
+    key = 'KEYWORD'
+    plaintext = 'SEPATU'
+
+    # Buat tabel
+    table = generate_table(key)
+    print("Tabel Playfair Cipher:")
+    for row in table:
+        print(row)
+
+    ciphertext = playfair_encrypt(plaintext, key)
+    decrypted = playfair_decrypt(ciphertext, key)
+
+    print("\nPlaintext :", plaintext)
+    print("Key       :", key)
+    print("Ciphertext:", ciphertext)
+    print("Dekripsi  :", decrypted)
+
+    Tabel Playfair Cipher:
+    KEYWO
+    RDABC
+    FGHIL
+    MNPQS
+    TUVXZ
+
+    Plaintext : SEPATU
+    Key       : KEYWORD
+    Ciphertext: NOVHUV
+    Dekripsi  : SEPATU
