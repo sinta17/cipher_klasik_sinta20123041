@@ -1,0 +1,42 @@
+
+
+    def vigenere_encrypt(plain, key):
+        key = key.upper()
+        result = ''
+        for i, char in enumerate(plain.upper()):
+            if char.isalpha():
+                shift = ord(key[i % len(key)]) - 65
+                result += chr((ord(char) - 65 + shift) % 26 + 65)
+            else:
+                result += char
+        return result
+
+
+    def vigenere_decrypt(cipher, key):
+        key = key.upper()
+        result = ''
+        for i, char in enumerate(cipher.upper()):
+            if char.isalpha():
+                shift = ord(key[i % len(key)]) - 65
+                result += chr((ord(char) - 65 - shift) % 26 + 65)
+            else:
+                result += char
+        return result
+
+
+    # Contoh penggunaan
+    plaintext = 'SALAK'
+    key = 'LEMON'
+
+    ciphertext = vigenere_encrypt(plaintext, key)
+    decrypted_text = vigenere_decrypt(ciphertext, key)
+
+    print("Plaintext :", plaintext)
+    print("Key       :", key)
+    print("Ciphertext:", ciphertext)
+    print("Dekripsi  :", decrypted_text)
+
+    Plaintext : SALAK
+    Key       : LEMON
+    Ciphertext: DEXOX
+    Dekripsi  : SALAK
